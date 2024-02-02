@@ -3,7 +3,7 @@ from pymongo import MongoClient
 class Mongobhai :
     def __init__(self):
         # Provide the mongodb atlas url to connect python to mongodb using pymongo
-        self.CONNECTION_STRING = "mongodb+srv://admin_diary:Xoromate324@cluster0.tytbfze.mongodb.net/?retryWrites=true&w=majority"
+        self.CONNECTION_STRING = "mongodb+srv://@cluster0.tytbfze.mongodb.net/?retryWrites=true&w=majority"
 
         # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
         self.client = MongoClient(self.CONNECTION_STRING)
