@@ -1,9 +1,13 @@
+import os
 from pymongo import MongoClient
+from dotenv import load_dotenv
+
 
 class Database :
     def __init__(self):
         # Provide the mongodb atlas url to connect python to mongodb using pymongo
-        self.CONNECTION_STRING = "mongodb+srv://admin:Xoromate324@cluster0.jvf8go4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+        load_dotenv()
+        self.CONNECTION_STRING = f'{os.getenv("URI")}'
 
         # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
         self.client = MongoClient(self.CONNECTION_STRING)
@@ -35,11 +39,12 @@ class Database :
         result = collection.find_one({'_id':0})
         if result is not None:
             if result['_id'] == 0:
-                return True
+                return True,result['Password']
             else : 
-                return False
+                return False,"Nothing"
         else : 
             return False
+    
 
     def read(self,db_name,coll_name,data):
         db = self.get_database(db_name)

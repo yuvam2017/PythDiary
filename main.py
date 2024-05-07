@@ -4,6 +4,7 @@ from tkinter import *
 from Database import Database
 from time import sleep
 from CryptTool import CryptTool
+import datetime
 
 db = Database()
 crypt = CryptTool()
@@ -18,8 +19,10 @@ class App:
         bool,msg = self.auth(user_id,pwd,mode)
 
         if bool:
+            print(colored("User Logged in\n",'red',attrs=['bold']))
             option = int(input(colored("\nChoose your Option : \n1. Write Diary\n2. Browse Diary\n3. Exit\n>>> ","white",attrs=['bold'])))
             if option == 1:
+                print(colored("Opening Your Dear Diary !!",attrs=['bold']))
                 self.open_dialog(action='write')
             elif option == 2:
                 self.open_dialog(action='browse')
@@ -50,16 +53,21 @@ class App:
         self.root.title("Diary-Online")
         self.root.config(bg='white')
 
-        # Label
+        # TITLE Label
         label = Label(text="Dear Diary",bg='white',fg='black',font=["Montserrat",20,"bold"])
         label.grid(row=0,column=0,columnspan=2,sticky=W)
+        
+        # Date Label
+        date = datetime.datetime.now().strftime("%d/%m/%Y")
+        label = Label(text=f"{date}",bg='white',fg='black',font=["Montserrat",20,"bold"])
+        label.grid(row=0,column=0,columnspan=2,sticky=W)
 
-        text_box = Text(padx=2,pady=2,borderwidth=2,yscrollcommand=True,fg="black",font=["Montserrat"],width=80)
-        text_box.grid(row=1,column=0,columnspan=2,sticky=NSEW)
+        self.text_box = Text(padx=2,pady=2,borderwidth=2,yscrollcommand=True,fg="black",font=["Montserrat"],width=80)
+        self.text_box.grid(row=1,column=0,columnspan=2,sticky=NSEW)
 
         # button
-        btn = Button(text="Save",fg="white",bg="green",command=self.onSave,activebackground="green",activeforeground="white",borderwidth=0.5,font=["Ubuntu",20,"bold"])
-        btn.grid(row=2,column=0)
+        btn_save = Button(text="Save",fg="white",bg="green",command=self.onSave,activebackground="green",activeforeground="white",borderwidth=0.5,font=["Ubuntu",20,"bold"])
+        btn_save.grid(row=2,column=0)
 
         btn_quit=Button(text="Cancel Diary",fg="white",bg="red",command=self.quit,activebackground="red",activeforeground="white",font=["Ubuntu",20,"bold"])
         btn_quit.grid(row=2,column=1,pady=5)
@@ -67,12 +75,26 @@ class App:
         self.root.mainloop()
     
     def onSave(self):
-        db.write
+        text = self.text_box.get("1.0",END)
+        print(text)
 
     def quit(self):
         self.root.destroy()
 
+
     def auth(self,uname,pwd,mode):
+        if mode == "loginAutoSave":
+            user_exists  = db.user_exists("users",uname)
+            if user_exists[0] :
+                user_file_saved = f'/home/{getpass.getuser()}/PythDiary/.user'
+                if os.path.exists(user_file_saved):
+                    with open(user_file_saved,'r') as fh:
+                        self.user_local = fh.readlines()
+                    self.user_local[0].split("@")
+
+        if os.path.exists(f"/home/{getpass.getuser()}/PythDiary/.user") : 
+            pass
+
         user_exists = db.user_exists("users",uname)
 
         if user_exists and mode == "login":
@@ -116,7 +138,7 @@ def login():
         pwd = getpass.getpass()
         print(colored('Password will be invisible in 3 seconds\nYour Password is : ','green',attrs=['bold']))
         print(colored(pwd,'red',attrs=['bold']),end='\r')
-        sleep(1)
+        sleep(3)
         print(colored('!!!!!!!!! Omitted Your Password !!!!!!!!!','green',attrs=['bold']))
         App(uname,pwd,mode='signup')
     elif choice == 3:
@@ -127,6 +149,9 @@ def login():
         login()
 
 if __name__ == "__main__":
+    path_basedir = f"/home/{getpass.getuser()}/PythDiary"
+    if not os.path.exists(path_basedir):
+        os.mkdir(path_basedir)
 
     text_banner = '''
 ########  ##    ## ######## ##     ##    ########  ####    ###    ########  ##    ## 
